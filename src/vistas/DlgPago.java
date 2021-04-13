@@ -115,6 +115,7 @@ public class DlgPago extends javax.swing.JDialog {
     private void btnTarjetaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTarjetaActionPerformed
         try {
             this.frmPuntoDeVenta.cobrarEnTarjeta();
+            this.txtTotal.setText("");
         } catch (SQLException ex) {
             Logger.getLogger(DlgPago.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -250,17 +250,6 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
 
     private void btnCobrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCobrarActionPerformed
         try {
-            this.registrarVenta();
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "No se pudo registrar la VENTA.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-        try {
-            Thread.sleep(2 * 1000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(FrmAbarrotesElPanda.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        this.limpiarFormulario();
-        try {
             controlVistas.despliegaVistaDePago(this, txtTotal.getText(), this.empleado);
         } catch (ParseException ex) {
             Logger.getLogger(FrmPuntoDeVenta.class.getName()).log(Level.SEVERE, null, ex);
@@ -341,7 +330,7 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
     }
 
     public void limpiarFormulario() {
-        txtTotal.setText("");
+        txtTotal.setText("0");
         txtBascula.setText("1");
         txtCantidad.setText("0");
         txtCodBarras.setText("");
@@ -525,7 +514,7 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
         if (resp == 0) {
             Balance balance2 = this.controlBalances.obtenerBalancePorEmpleado(this.date1, this.date1, this.empleado);
             if (balance2 != null) {
-                balance2.setEfectivoIngresado(balance2.getVaucherIngresado() + Float.parseFloat(txtTotal.getText()));
+                balance2.setVaucherIngresado(balance2.getVaucherIngresado() + Float.parseFloat(txtTotal.getText()));
                 controlBalances.actualizarBalance(balance2);
             }
             try {
