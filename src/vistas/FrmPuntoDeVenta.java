@@ -44,6 +44,7 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
      * Creates new form FrmPuntoDeVenta
      *
      * @param empleado
+     * @throws java.text.ParseException
      */
     public FrmPuntoDeVenta(Empleado empleado) throws ParseException {
         this.date1 = dateFormat.parse(this.date.getYear() + "-" + this.date.getMonth() + "-" + this.date.getDay());
@@ -322,11 +323,7 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
     }
 
     public boolean verificacionDeCamposVenta() {
-        if (txtTotal.getText().equalsIgnoreCase("") || tblProductosVenta.getRowCount() == 0) {
-            return false;
-        } else {
-            return true;
-        }
+        return !(txtTotal.getText().equalsIgnoreCase("") || tblProductosVenta.getRowCount() == 0);
     }
 
     public void limpiarFormulario() {
@@ -414,25 +411,42 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
         String codBarras = txtCodBarras.getText();
         this.actualizarStock(codBarras);
         Producto producto;
+        Boolean noStock=false;
         try {
             producto = controlProductos.obtenerProductoCodBarras(codBarras);
             if (producto != null) {
+                if(Float.parseFloat(txtBascula.getText())<=producto.getStock()){
                 for (int i = 0; i < modeloEscaneados.getRowCount(); i++) {
                     if (codBarras.equals(modeloEscaneados.getValueAt(i, 0) + "")) {
                         Float cantidad = (Float) modeloEscaneados.getValueAt(i, 1) + Float.parseFloat(txtBascula.getText());
+                        if(cantidad<=producto.getStock()){
                         producto.setStock(producto.getStock() - 1);
                         Float montoTotal = producto.getPrecioActual() * cantidad;
                         modeloEscaneados.setValueAt(cantidad, i, 1);
                         modeloEscaneados.setValueAt(montoTotal, i, 4);
                         this.actualizarCampos();
                         return;
+                        }else{
+                            
+                            noStock=true;
+                        }
                     }
                 }
+                
+                if(!noStock){
                 productos.setProducto(producto);
                 productos.setPrecio(producto.getPrecioActual());
                 productos.setCantidad(Float.parseFloat(txtBascula.getText()));
                 productos.setMontoTotal(productos.getPrecio() * productos.getCantidad());
                 modeloEscaneados.addRow(productos.toArray());
+                }else{
+                    JOptionPane.showMessageDialog(null, "No hay stock suficiente en el inventario.", "Información", JOptionPane.ERROR_MESSAGE);
+                }
+                }else{
+                    
+                    
+                    JOptionPane.showMessageDialog(null, "No hay stock suficiente en el inventario.", "Información", JOptionPane.ERROR_MESSAGE);
+                }
             } else {
                 JOptionPane.showMessageDialog(null, "El producto escaneado no existe en la base de datos", "Información", JOptionPane.ERROR_MESSAGE);
             }
