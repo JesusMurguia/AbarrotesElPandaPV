@@ -241,11 +241,15 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
             }
         }
         if (evt.getKeyCode() == KeyEvent.VK_F6) {
-            try {
+                    int input = JOptionPane.showConfirmDialog(null, "Estas seguro que deseas cancelar la compra?");
+                    if(input==0){
+                        try {
                 this.cancelarCompra();
             } catch (SQLException ex) {
                 Logger.getLogger(FrmPuntoDeVenta.class.getName()).log(Level.SEVERE, null, ex);
             }
+                    }
+            
         }
     }//GEN-LAST:event_txtCodBarrasKeyReleased
 
