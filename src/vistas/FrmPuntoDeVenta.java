@@ -365,7 +365,7 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
             venta.setTotal(Float.parseFloat(txtTotal.getText()));
             venta.setCliente(cliente);
             this.controlVentas.agregarVenta(venta);
-            
+
             List<ProductoVenta> productosVentas = new ArrayList<>();
             DefaultTableModel modelo = (DefaultTableModel) this.tblProductosVenta.getModel();
 
@@ -421,13 +421,13 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
         } else {
             int input = JOptionPane.showConfirmDialog(null, "Estas seguro que deseas cancelar el producto?");
             if (input == 0) {
-            DefaultTableModel modeloSeleccionados = (DefaultTableModel) tblProductosVenta.getModel();
-            String codBarras = (String) modeloSeleccionados.getValueAt(fila, 0);
-            Producto producto = this.controlProductos.obtenerProductoCodBarras(codBarras);
-            //producto.setStock(producto.getStock() + (Integer) modeloSeleccionados.getValueAt(fila, 3));
-            //this.controlProductos.actualizarStock(idProducto, producto);
-            modeloSeleccionados.removeRow(fila);
-            this.actualizarCampos();
+                DefaultTableModel modeloSeleccionados = (DefaultTableModel) tblProductosVenta.getModel();
+                String codBarras = (String) modeloSeleccionados.getValueAt(fila, 0);
+                Producto producto = this.controlProductos.obtenerProductoCodBarras(codBarras);
+                //producto.setStock(producto.getStock() + (Integer) modeloSeleccionados.getValueAt(fila, 3));
+                //this.controlProductos.actualizarStock(idProducto, producto);
+                modeloSeleccionados.removeRow(fila);
+                this.actualizarCampos();
             }
         }
     }
@@ -577,8 +577,9 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
 
     public boolean cobrarCredito() throws SQLException, ParseException {
         int resp = JOptionPane.showConfirmDialog(null, "¿Está seguro que desea cobrar en credito?");
+        float adeudo = (float) cliente.getAdeudo();
         if (resp == 0) {
-            if (cliente != null) {
+            if (cliente != null && adeudo < cliente.getLimiteCredito()) {
                 Balance balance2 = this.controlBalances.obtenerBalancePorEmpleado(this.date1, this.date1, this.empleado);
                 if (balance2 != null) {
                     balance2.setCredito(balance2.getCredito() + Float.parseFloat(txtTotal.getText()));
@@ -600,6 +601,7 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
                 this.limpiarFormulario();
                 return true;
             } else {
+                JOptionPane.showMessageDialog(null, "Limite de credito excedido", "Error", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
         } else {
