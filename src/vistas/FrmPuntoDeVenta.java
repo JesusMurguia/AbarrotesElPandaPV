@@ -18,11 +18,13 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import negocio.ControlBalances;
+import negocio.ControlClientes;
 import negocio.ControlProductos;
 import negocio.ControlProductosVentas;
 import negocio.ControlVentas;
 import negocio.ControlVistas;
 import objetosNegocio.Balance;
+import objetosNegocio.Cliente;
 import objetosNegocio.Empleado;
 import objetosNegocio.Producto;
 import objetosNegocio.ProductoVenta;
@@ -39,6 +41,7 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     Date date = new Date();
     Date date1;
+    Cliente cliente;
 
     /**
      * Creates new form FrmPuntoDeVenta
@@ -53,6 +56,14 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
         initComponents();
         this.cargarBanner();
         this.setLocationRelativeTo(null);
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
     }
 
     /**
@@ -110,9 +121,16 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
             Class[] types = new Class [] {
                 java.lang.String.class, java.lang.Float.class, java.lang.String.class, java.lang.Float.class, java.lang.Float.class
             };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
             }
         });
         scrollTabla.setViewportView(tblProductosVenta);
@@ -215,6 +233,8 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
                 this.leerCampoCodigoBarras();
             } catch (SQLException ex) {
                 Logger.getLogger(FrmPuntoDeVenta.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ParseException ex) {
+                Logger.getLogger(FrmPuntoDeVenta.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         if (evt.getKeyCode() == KeyEvent.VK_F2) {
@@ -241,15 +261,12 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
             }
         }
         if (evt.getKeyCode() == KeyEvent.VK_F6) {
-                    int input = JOptionPane.showConfirmDialog(null, "Estas seguro que deseas cancelar la compra?");
-                    if(input==0){
-                        try {
+            try {
                 this.cancelarCompra();
             } catch (SQLException ex) {
                 Logger.getLogger(FrmPuntoDeVenta.class.getName()).log(Level.SEVERE, null, ex);
             }
-                    }
-            
+
         }
     }//GEN-LAST:event_txtCodBarrasKeyReleased
 
@@ -260,7 +277,7 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
             Logger.getLogger(FrmPuntoDeVenta.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnCobrarActionPerformed
-    private void leerCampoCodigoBarras() throws SQLException {
+    private void leerCampoCodigoBarras() throws SQLException, ParseException {
         String textoCodigoDeBarras = txtCodBarras.getText();
         if (textoCodigoDeBarras.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Este campo no puede estar vacio.", "Error En Datos", JOptionPane.ERROR_MESSAGE);
@@ -269,7 +286,8 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
         } else if (textoCodigoDeBarras.charAt(textoCodigoDeBarras.length() - 1) == 'T' || textoCodigoDeBarras.charAt(textoCodigoDeBarras.length() - 1) == 't') {
             this.cobrarEnTarjeta();
         } else if (textoCodigoDeBarras.charAt(textoCodigoDeBarras.length() - 1) == 'c' || textoCodigoDeBarras.charAt(textoCodigoDeBarras.length() - 1) == 'C') {
-            this.cobrarCredito();
+            DlgAutorizacionCiente dlgAutorizacionCiente = new DlgAutorizacionCiente(this);
+            dlgAutorizacionCiente.setVisible(true);
         } else if (textoCodigoDeBarras.charAt(textoCodigoDeBarras.length() - 1) == 'Q' || textoCodigoDeBarras.charAt(textoCodigoDeBarras.length() - 1) == 'q') {
             this.eliminarProducto();
         } else if (textoCodigoDeBarras.charAt(textoCodigoDeBarras.length() - 1) == 'B' || textoCodigoDeBarras.charAt(textoCodigoDeBarras.length() - 1) == 'b') {
@@ -342,12 +360,12 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
     private void registrarVenta() throws SQLException {
         if (this.verificacionDeCamposVenta()) {
             Venta venta = new Venta();
-
             venta.setFecha(new Date());
             venta.setEmpleado(empleado);
             venta.setTotal(Float.parseFloat(txtTotal.getText()));
+            venta.setCliente(cliente);
             this.controlVentas.agregarVenta(venta);
-
+            
             List<ProductoVenta> productosVentas = new ArrayList<>();
             DefaultTableModel modelo = (DefaultTableModel) this.tblProductosVenta.getModel();
 
@@ -379,17 +397,19 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
     }
 
     private void cancelarCompra() throws SQLException {
-        Integer fila = tblProductosVenta.getSelectedRow();
-        DefaultTableModel modeloSeleccionados = (DefaultTableModel) tblProductosVenta.getModel();
-        modeloSeleccionados.setRowCount(0);
-        limpiarFormulario();
+        int input = JOptionPane.showConfirmDialog(null, "Estas seguro que deseas cancelar la compra?");
+        if (input == 0) {
+            Integer fila = tblProductosVenta.getSelectedRow();
+            DefaultTableModel modeloSeleccionados = (DefaultTableModel) tblProductosVenta.getModel();
+            modeloSeleccionados.setRowCount(0);
+            limpiarFormulario();
 //        for (int i = 0; i < modeloSeleccionados.getRowCount(); i++) {
 //            Integer idProducto = (Integer) modeloSeleccionados.getValueAt(i, 0);
 //            Producto producto = this.controlProductos.obtenerPorId(idProducto);
 //            Integer cantidad = (Integer) modeloSeleccionados.getValueAt(i, 3);
 ////            producto.setStock((producto.getStock() + cantidad));
 ////            this.controlProductos.actualizarStock(idProducto, producto);
-//        }
+        }
     }
 
     private void eliminarProducto() throws SQLException {
@@ -399,6 +419,8 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Debes seleccionar un PRODUCTO",
                     "Información", JOptionPane.INFORMATION_MESSAGE);
         } else {
+            int input = JOptionPane.showConfirmDialog(null, "Estas seguro que deseas cancelar el producto?");
+            if (input == 0) {
             DefaultTableModel modeloSeleccionados = (DefaultTableModel) tblProductosVenta.getModel();
             String codBarras = (String) modeloSeleccionados.getValueAt(fila, 0);
             Producto producto = this.controlProductos.obtenerProductoCodBarras(codBarras);
@@ -406,6 +428,7 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
             //this.controlProductos.actualizarStock(idProducto, producto);
             modeloSeleccionados.removeRow(fila);
             this.actualizarCampos();
+            }
         }
     }
 
@@ -415,40 +438,39 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
         String codBarras = txtCodBarras.getText();
         this.actualizarStock(codBarras);
         Producto producto;
-        Boolean noStock=false;
+        Boolean noStock = false;
         try {
             producto = controlProductos.obtenerProductoCodBarras(codBarras);
             if (producto != null) {
-                if(Float.parseFloat(txtBascula.getText())<=producto.getStock()){
-                for (int i = 0; i < modeloEscaneados.getRowCount(); i++) {
-                    if (codBarras.equals(modeloEscaneados.getValueAt(i, 0) + "")) {
-                        Float cantidad = (Float) modeloEscaneados.getValueAt(i, 1) + Float.parseFloat(txtBascula.getText());
-                        if(cantidad<=producto.getStock()){
-                        producto.setStock(producto.getStock() - 1);
-                        Float montoTotal = producto.getPrecioActual() * cantidad;
-                        modeloEscaneados.setValueAt(cantidad, i, 1);
-                        modeloEscaneados.setValueAt(montoTotal, i, 4);
-                        this.actualizarCampos();
-                        return;
-                        }else{
-                            
-                            noStock=true;
+                if (Float.parseFloat(txtBascula.getText()) <= producto.getStock()) {
+                    for (int i = 0; i < modeloEscaneados.getRowCount(); i++) {
+                        if (codBarras.equals(modeloEscaneados.getValueAt(i, 0) + "")) {
+                            Float cantidad = (Float) modeloEscaneados.getValueAt(i, 1) + Float.parseFloat(txtBascula.getText());
+                            if (cantidad <= producto.getStock()) {
+                                producto.setStock(producto.getStock() - 1);
+                                Float montoTotal = producto.getPrecioActual() * cantidad;
+                                modeloEscaneados.setValueAt(cantidad, i, 1);
+                                modeloEscaneados.setValueAt(montoTotal, i, 4);
+                                this.actualizarCampos();
+                                return;
+                            } else {
+
+                                noStock = true;
+                            }
                         }
                     }
-                }
-                
-                if(!noStock){
-                productos.setProducto(producto);
-                productos.setPrecio(producto.getPrecioActual());
-                productos.setCantidad(Float.parseFloat(txtBascula.getText()));
-                productos.setMontoTotal(productos.getPrecio() * productos.getCantidad());
-                modeloEscaneados.addRow(productos.toArray());
-                }else{
-                    JOptionPane.showMessageDialog(null, "No hay stock suficiente en el inventario.", "Información", JOptionPane.ERROR_MESSAGE);
-                }
-                }else{
-                    
-                    
+
+                    if (!noStock) {
+                        productos.setProducto(producto);
+                        productos.setPrecio(producto.getPrecioActual());
+                        productos.setCantidad(Float.parseFloat(txtBascula.getText()));
+                        productos.setMontoTotal(productos.getPrecio() * productos.getCantidad());
+                        modeloEscaneados.addRow(productos.toArray());
+                    } else {
+                        JOptionPane.showMessageDialog(null, "No hay stock suficiente en el inventario.", "Información", JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+
                     JOptionPane.showMessageDialog(null, "No hay stock suficiente en el inventario.", "Información", JOptionPane.ERROR_MESSAGE);
                 }
             } else {
@@ -553,8 +575,38 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
 
     }
 
-    public void cobrarCredito() {
-        JOptionPane.showMessageDialog(null, "Por este momento esta opcion no esta disponible :(.", "Mantenimiento", JOptionPane.WARNING_MESSAGE);
+    public boolean cobrarCredito() throws SQLException, ParseException {
+        int resp = JOptionPane.showConfirmDialog(null, "¿Está seguro que desea cobrar en credito?");
+        if (resp == 0) {
+            if (cliente != null) {
+                Balance balance2 = this.controlBalances.obtenerBalancePorEmpleado(this.date1, this.date1, this.empleado);
+                if (balance2 != null) {
+                    balance2.setCredito(balance2.getCredito() + Float.parseFloat(txtTotal.getText()));
+                    controlBalances.actualizarBalance(balance2);
+                    cliente.setAdeudo(cliente.getAdeudo() + Float.parseFloat(txtTotal.getText()));
+                    controlClientes.actualizarCliente(cliente.getId(), cliente);
+                }
+                try {
+                    this.registrarVenta();
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(null, "No se pudo registrar la VENTA.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+                try {
+                    Thread.sleep(2 * 1000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(FrmAbarrotesElPanda.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+                this.limpiarFormulario();
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Operacion Cancelada ", "Informacion", JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }
+
     }
 
 
@@ -582,6 +634,8 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
     private final ControlProductos controlProductos = new ControlProductos();
     private final ControlVistas controlVistas = new ControlVistas();
     private final ControlVentas controlVentas = new ControlVentas();
+    private final ControlClientes controlClientes = new ControlClientes();
     private final ControlBalances controlBalances = new ControlBalances();
     private final ControlProductosVentas controlProductosVentas = new ControlProductosVentas();
+    private final DlgAutorizacionCiente dlgAutorizacionCiente = new DlgAutorizacionCiente(this);
 }

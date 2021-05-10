@@ -19,10 +19,11 @@ import objetosNegocio.Empleado;
  * @author GPE
  */
 public class DlgPago extends javax.swing.JDialog {
-
+    
     private final String total;
     private final Empleado empleado;
     private final FrmPuntoDeVenta frmPuntoDeVenta;
+    DlgAutorizacionCiente dlgAutorizacionCiente;
 
     /**
      * Creates new form DlgPago
@@ -30,6 +31,8 @@ public class DlgPago extends javax.swing.JDialog {
      * @param parent
      * @param modal
      * @param total
+     * @param empleado
+     * @throws java.text.ParseException
      */
     public DlgPago(java.awt.Frame parent, boolean modal, String total, Empleado empleado) throws ParseException {
         super(parent, modal);
@@ -122,7 +125,9 @@ public class DlgPago extends javax.swing.JDialog {
     }//GEN-LAST:event_btnTarjetaActionPerformed
 
     private void btnCreditoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreditoActionPerformed
-        this.frmPuntoDeVenta.cobrarCredito();
+        DlgAutorizacionCiente dlgAutorizacionCiente = new DlgAutorizacionCiente(frmPuntoDeVenta);
+        dlgAutorizacionCiente.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_btnCreditoActionPerformed
 
     private void btnEfectivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEfectivoActionPerformed
@@ -136,7 +141,7 @@ public class DlgPago extends javax.swing.JDialog {
             return false;
         }
     }
-
+    
     public void cobrarEfectivo() {
         if (!txtTotal.getText().equalsIgnoreCase("0")) {
             String respuesta = "0";

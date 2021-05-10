@@ -46,6 +46,9 @@ public class Cliente implements Serializable {
     @Column(name = "limiteCredito", length = 15, nullable = true)
     private double limiteCredito;
     
+    @Column(name = "NIP", length = 15, nullable = true)
+    private String nip;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "cliente")
     private List<Venta> ventas;
 
@@ -64,6 +67,14 @@ public class Cliente implements Serializable {
 
     public Integer getId() {
         return id;
+    }
+
+    public String getNip() {
+        return nip;
+    }
+
+    public void setNip(String nip) {
+        this.nip = nip;
     }
 
     public void setId(Integer id) {

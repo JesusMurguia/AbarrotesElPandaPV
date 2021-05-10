@@ -4,6 +4,7 @@ import java.awt.Frame;
 import java.sql.SQLException;
 import java.text.ParseException;
 import javax.swing.JOptionPane;
+import objetosNegocio.Cliente;
 import objetosNegocio.Empleado;
 import vistas.DlgAyuda;
 import vistas.DlgBuscarProducto;
@@ -35,7 +36,7 @@ public class ControlVistas {
     }
 
     public void despliegaVistaDePago(Frame frame, String total, Empleado empleado) throws ParseException {
-        DlgPago dlgPago = new DlgPago(frame, true, total,empleado);
+        DlgPago dlgPago = new DlgPago(frame, true, total, empleado);
         dlgPago.setVisible(true);
     }
 
@@ -56,6 +57,22 @@ public class ControlVistas {
                     frmPuntoDeVenta.setVisible(true);
                     return true;
                 }
+            } else {
+                JOptionPane.showMessageDialog(null, "Contraseña Incorrecta", "Error", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "El empleado no existe", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+    }
+
+    public boolean AutorizarPagoACredito(Cliente cliente, String contraseña) throws ParseException {
+        if (cliente != null) {
+            if (cliente.getNip().equals(contraseña)) {
+                JOptionPane.showMessageDialog(null, "Contraseña Correcta, transaccion aceptada", "Error", JOptionPane.ERROR_MESSAGE);
+                return true;
             } else {
                 JOptionPane.showMessageDialog(null, "Contraseña Incorrecta", "Error", JOptionPane.ERROR_MESSAGE);
                 return false;
