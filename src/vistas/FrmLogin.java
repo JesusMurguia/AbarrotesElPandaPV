@@ -1,6 +1,7 @@
 package vistas;
 
 import java.awt.Color;
+import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -50,7 +51,7 @@ public class FrmLogin extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Faceboot");
+        setTitle("Inicio de Sesión");
         setFocusTraversalPolicyProvider(true);
         setLocationByPlatform(true);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -98,6 +99,9 @@ public class FrmLogin extends javax.swing.JFrame {
         getContentPane().add(btnLogin, new org.netbeans.lib.awtextra.AbsoluteConstraints(64, 198, 121, 34));
 
         txtPassword.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtPasswordKeyReleased(evt);
+            }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 txtPasswordKeyTyped(evt);
             }
@@ -152,6 +156,21 @@ public class FrmLogin extends javax.swing.JFrame {
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         this.setVisible(true);
     }//GEN-LAST:event_formWindowClosing
+
+    private void txtPasswordKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPasswordKeyReleased
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            try {
+                try {
+                    this.acceder();
+                } catch (ParseException ex) {
+                    Logger.getLogger(FrmLogin.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            }
+        }
+    }//GEN-LAST:event_txtPasswordKeyReleased
 
     /**
      * @param args the command line arguments

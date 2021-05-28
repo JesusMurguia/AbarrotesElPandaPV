@@ -27,11 +27,11 @@ public class ControlVentas {
         return this.ventasDAO.obtenerVentaPorId(id);
     }
 
-    public List<Venta> obtenerVentas(Date inicio, Date fin) throws SQLException {
+    public List<Venta> obtenerVentasFechas(Date inicio, Date fin) throws SQLException {
         return this.ventasDAO.obtenerVentas(inicio, fin);
     }
 
     public List<Venta> obtenerVentas(Date inicio, Date fin, Cliente cliente) throws SQLException {
-        return this.ventasDAO.obtenerVentasPorCliente(inicio, fin, cliente);
+        return this.ventasDAO.obtenerVentas(inicio, fin);
     }
 }

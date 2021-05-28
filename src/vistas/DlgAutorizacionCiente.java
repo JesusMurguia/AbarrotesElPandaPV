@@ -1,5 +1,6 @@
 package vistas;
 
+import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -79,6 +80,9 @@ public class DlgAutorizacionCiente extends javax.swing.JDialog {
             }
         });
         txtUser.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtUserKeyReleased(evt);
+            }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 txtUserKeyTyped(evt);
             }
@@ -97,6 +101,9 @@ public class DlgAutorizacionCiente extends javax.swing.JDialog {
         getContentPane().add(btnConfirmar, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 80, 121, 34));
 
         txtPassword.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtPasswordKeyReleased(evt);
+            }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 txtPasswordKeyTyped(evt);
             }
@@ -144,6 +151,30 @@ public class DlgAutorizacionCiente extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(null, "Exedio el numero maximo de caracteres", "Advertencia", JOptionPane.WARNING_MESSAGE);
         }
     }//GEN-LAST:event_txtPasswordKeyTyped
+
+    private void txtPasswordKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPasswordKeyReleased
+        if (evt.getKeyCode() == KeyEvent.VK_F1) {
+            try {
+            this.autorizar();
+        } catch (SQLException ex) {
+            Logger.getLogger(DlgAutorizacionCiente.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParseException ex) {
+            Logger.getLogger(DlgAutorizacionCiente.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        }
+    }//GEN-LAST:event_txtPasswordKeyReleased
+
+    private void txtUserKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtUserKeyReleased
+        if (evt.getKeyCode() == KeyEvent.VK_F1) {
+            try {
+            this.autorizar();
+        } catch (SQLException ex) {
+            Logger.getLogger(DlgAutorizacionCiente.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParseException ex) {
+            Logger.getLogger(DlgAutorizacionCiente.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        }
+    }//GEN-LAST:event_txtUserKeyReleased
 
     /**
      * @param args the command line arguments

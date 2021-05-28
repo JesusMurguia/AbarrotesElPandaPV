@@ -97,6 +97,14 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Punto de Venta \"Abarrotes el Panda\"");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         lblBanner.setBackground(new java.awt.Color(255, 255, 255));
@@ -156,6 +164,11 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
         txtBascula.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtBasculaActionPerformed(evt);
+            }
+        });
+        txtBascula.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtBasculaKeyTyped(evt);
             }
         });
         getContentPane().add(txtBascula, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 550, 140, 40));
@@ -277,6 +290,32 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
             Logger.getLogger(FrmPuntoDeVenta.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnCobrarActionPerformed
+
+    private void txtBasculaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBasculaKeyTyped
+        char validar = evt.getKeyChar();
+        if (Character.isLetter(validar)) {
+            getToolkit().beep();
+            evt.consume();
+            JOptionPane.showMessageDialog(null, "Solo puedes ingresar numeros  ", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_txtBasculaKeyTyped
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        if (this.empleado.getTipo().equalsIgnoreCase("Administrador")) {
+            FrmAbarrotesElPanda frmAbarrotesElPanda = new FrmAbarrotesElPanda(empleado);
+        } else {
+            FrmLogin frmLogin = new FrmLogin();
+            frmLogin.setVisible(true);
+        }
+    }//GEN-LAST:event_formWindowClosing
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        if (this.empleado.getTipo().equalsIgnoreCase("Administrador")) {
+            FrmAbarrotesElPanda frmAbarrotesElPanda = new FrmAbarrotesElPanda(empleado);
+        } else {
+            FrmLogin frmLogin = new FrmLogin();
+            frmLogin.setVisible(true);
+        }    }//GEN-LAST:event_formWindowClosed
     private void leerCampoCodigoBarras() throws SQLException, ParseException {
         String textoCodigoDeBarras = txtCodBarras.getText();
         if (textoCodigoDeBarras.isEmpty()) {
@@ -295,7 +334,12 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
         } else if (textoCodigoDeBarras.charAt(textoCodigoDeBarras.length() - 1) == 'x' || textoCodigoDeBarras.charAt(textoCodigoDeBarras.length() - 1) == 'X' || textoCodigoDeBarras.charAt(textoCodigoDeBarras.length() - 1) == '*') {
             this.multiplicador(textoCodigoDeBarras);
         } else {
-            this.escanearProducto();
+            Float cantidad = Float.parseFloat("0" + txtBascula.getText());
+            if (cantidad > 0) {
+                this.escanearProducto();
+            } else {
+                JOptionPane.showMessageDialog(null, "La bascula debe tener un valor mayor a 0", "Error En Datos", JOptionPane.ERROR_MESSAGE);
+            }
         }
 
     }
@@ -400,9 +444,13 @@ public class FrmPuntoDeVenta extends javax.swing.JFrame {
         int input = JOptionPane.showConfirmDialog(null, "Estas seguro que deseas cancelar la compra?");
         if (input == 0) {
             Integer fila = tblProductosVenta.getSelectedRow();
-            DefaultTableModel modeloSeleccionados = (DefaultTableModel) tblProductosVenta.getModel();
-            modeloSeleccionados.setRowCount(0);
-            limpiarFormulario();
+            if (tblProductosVenta.getRowCount() <= 0) {
+                DefaultTableModel modeloSeleccionados = (DefaultTableModel) tblProductosVenta.getModel();
+                modeloSeleccionados.setRowCount(0);
+                limpiarFormulario();
+            } else {
+                JOptionPane.showMessageDialog(null, "Los campos de la venta no pueden estar vacios", "Información", JOptionPane.ERROR_MESSAGE);
+            }
 //        for (int i = 0; i < modeloSeleccionados.getRowCount(); i++) {
 //            Integer idProducto = (Integer) modeloSeleccionados.getValueAt(i, 0);
 //            Producto producto = this.controlProductos.obtenerPorId(idProducto);

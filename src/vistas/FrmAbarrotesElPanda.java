@@ -173,6 +173,11 @@ public class FrmAbarrotesElPanda extends javax.swing.JFrame {
         menuVentas.add(menuVentasPunto);
 
         menuVentasReportes.setText("Reportes");
+        menuVentasReportes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuVentasReportesActionPerformed(evt);
+            }
+        });
         menuVentas.add(menuVentasReportes);
 
         jMenuBar1.add(menuVentas);
@@ -261,6 +266,11 @@ public class FrmAbarrotesElPanda extends javax.swing.JFrame {
         
         this.dispose();
     }//GEN-LAST:event_menuVentasPuntoActionPerformed
+
+    private void menuVentasReportesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuVentasReportesActionPerformed
+        FrmReportesDeVenta frdv= new FrmReportesDeVenta();
+        frdv.setVisible(true);
+    }//GEN-LAST:event_menuVentasReportesActionPerformed
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */

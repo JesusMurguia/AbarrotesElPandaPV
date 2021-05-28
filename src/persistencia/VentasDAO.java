@@ -82,34 +82,20 @@ public class VentasDAO {
         return ventas;
     }
 
-    public List<Venta> obtenerVentasPorCliente2(Date inicio, Date fin, Cliente cliente) throws SQLException {
-        EntityManagerFactory factory = Persistence.createEntityManagerFactory("AbarrotesElPandaPU");
-        EntityManager entityManager = factory.createEntityManager();
-        entityManager.getTransaction().begin();
-        //Crea el consructor de consultas
-        CriteriaQuery criteria = entityManager.getCriteriaBuilder().createQuery();
-        //Se construye el objeto de consulta en si
-        criteria.select(criteria.from(Venta.class));
-        //Creacion de la consulta lista para ejecutarse
-        Query query = entityManager.createQuery(criteria);
-        //Ejecucion del query y retorno de resultados.
-        List<Venta> ventas = query.getResultList();
-
-        entityManager.getTransaction().commit();
-        return ventas;
-    }
-
     public List<Venta> obtenerVentasPorCliente(Date inicio, Date fin, Cliente cliente) throws SQLException {
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("AbarrotesElPandaPU");
         EntityManager entityManager = factory.createEntityManager();
         entityManager.getTransaction().begin();
-        List<Venta> ventas = null;
+        List<Venta> ventas;
         if (cliente == null) {
             String jpqlQuery = "SELECT v FROM Venta v WHERE v.fecha BETWEEN :inicio AND :fin";
             TypedQuery<Venta> query = entityManager.createQuery(jpqlQuery, Venta.class);
             query.setParameter("inicio", inicio, TemporalType.TIMESTAMP);
             query.setParameter("fin", fin, TemporalType.TIMESTAMP);
             ventas = query.getResultList();
+            for (Venta venta: ventas) {
+                System.out.println(venta.toString());
+            }
         } else {
             String jpqlQuery = "SELECT v FROM Venta v WHERE v.fecha BETWEEN :inicio AND :fin AND v.cliente = :cliente";
             TypedQuery<Venta> query = entityManager.createQuery(jpqlQuery, Venta.class);
@@ -118,7 +104,6 @@ public class VentasDAO {
             query.setParameter("cliente", cliente);
             ventas = query.getResultList();
         }
-        entityManager.getTransaction().commit();
         return ventas;
     }
 }
