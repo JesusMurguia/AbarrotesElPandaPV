@@ -235,7 +235,7 @@ public class DlgAutorizacionCiente extends javax.swing.JDialog {
             cliente = this.controlClientes.obtenerClientePorId(Integer.parseInt(txtUser.getText()));
             if (cliente != null) {
                 if (cliente.getNip().equals(txtPassword.getText())) {
-                    JOptionPane.showMessageDialog(null, "Contraseña Correcta, transaccion aceptada", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Contraseña Correcta, transaccion aceptada", "Exito", JOptionPane.INFORMATION_MESSAGE);
                     frmPuntoDeVenta.setCliente(cliente);
                     frmPuntoDeVenta.cobrarCredito();
                     this.setConfirmacion(true);

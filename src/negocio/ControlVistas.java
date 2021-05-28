@@ -71,7 +71,7 @@ public class ControlVistas {
     public boolean AutorizarPagoACredito(Cliente cliente, String contraseña) throws ParseException {
         if (cliente != null) {
             if (cliente.getNip().equals(contraseña)) {
-                JOptionPane.showMessageDialog(null, "Contraseña Correcta, transaccion aceptada", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Contraseña Correcta, transaccion aceptada", "Exito", JOptionPane.INFORMATION_MESSAGE);
                 return true;
             } else {
                 JOptionPane.showMessageDialog(null, "Contraseña Incorrecta", "Error", JOptionPane.ERROR_MESSAGE);
